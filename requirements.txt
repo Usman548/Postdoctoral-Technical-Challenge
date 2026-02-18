@@ -1,5 +1,4 @@
 Pillow==12.0.0
-data==2025.2
 faiss-cpu==1.13.2
 matplotlib==3.10.7
 medmnist==3.0.2
