@@ -1,0 +1,11 @@
+[
+  {
+    "type": "text",
+    "query": "normal chest",
+    "target_label": 0,
+    "k": 5,
+    "results_count": 5,
+    "time": 0.0,
+    "timestamp": "2026-02-17T15:00:22.615165"
+  }
+]

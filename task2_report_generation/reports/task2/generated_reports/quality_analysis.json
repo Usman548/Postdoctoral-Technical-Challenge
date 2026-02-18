@@ -1,0 +1,64 @@
+{
+  "num_samples": 4,
+  "model": "google/medgemma-4b-it",
+  "prompt_analysis": {
+    "basic": {
+      "avg_word_count": 0.0,
+      "num_reports": 0,
+      "agreement_with_truth": {
+        "normal": 0,
+        "pneumonia": 0,
+        "overall": 0.0
+      },
+      "sample_reports": []
+    },
+    "structured": {
+      "avg_word_count": 0.0,
+      "num_reports": 0,
+      "agreement_with_truth": {
+        "normal": 0,
+        "pneumonia": 0,
+        "overall": 0.0
+      },
+      "sample_reports": []
+    },
+    "clinical": {
+      "avg_word_count": 0.0,
+      "num_reports": 0,
+      "agreement_with_truth": {
+        "normal": 0,
+        "pneumonia": 0,
+        "overall": 0.0
+      },
+      "sample_reports": []
+    },
+    "pneumonia_focused": {
+      "avg_word_count": 0.0,
+      "num_reports": 0,
+      "agreement_with_truth": {
+        "normal": 0,
+        "pneumonia": 0,
+        "overall": 0.0
+      },
+      "sample_reports": []
+    },
+    "concise": {
+      "avg_word_count": 0.0,
+      "num_reports": 0,
+      "agreement_with_truth": {
+        "normal": 0,
+        "pneumonia": 0,
+        "overall": 0.0
+      },
+      "sample_reports": []
+    }
+  },
+  "accuracy_analysis": {},
+  "limitations": [],
+  "recommendations": [
+    "Best performing prompt: 'basic' with 0.0% agreement",
+    "Consider fine-tuning MedGemma on specific report structure",
+    "Add more clinical context in prompts for better accuracy",
+    "Evaluate on more diverse cases to test generalization"
+  ]
+}

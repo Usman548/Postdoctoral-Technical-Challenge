@@ -1,0 +1,16 @@
+Pillow==12.0.0
+data==2025.2
+faiss-cpu==1.13.2
+matplotlib==3.10.7
+medmnist==3.0.2
+models==0.14.6
+numpy==2.2.6
+pandas==2.3.3
+pyyaml==6.0.3
+requests==2.32.5
+scikit-learn==1.7.2
+seaborn==0.13.2
+torch==2.7.1+cu118
+torchvision==0.22.1+cu118
+tqdm==4.67.1
+transformers==5.1.0

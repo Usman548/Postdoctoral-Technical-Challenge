@@ -1,0 +1,27 @@
+[
+  {
+    "type": "image",
+    "k": 3,
+    "results_count": 3,
+    "time": 0.039023637771606445,
+    "timestamp": "2026-02-17T15:13:26.437532"
+  },
+  {
+    "type": "text",
+    "query": "pneumonia",
+    "target_label": 1,
+    "k": 3,
+    "results_count": 3,
+    "time": 0.0,
+    "timestamp": "2026-02-17T15:13:26.736032"
+  },
+  {
+    "type": "text",
+    "query": "normal chest",
+    "target_label": 0,
+    "k": 3,
+    "results_count": 3,
+    "time": 0.0010013580322265625,
+    "timestamp": "2026-02-17T15:13:26.890689"
+  }
+]

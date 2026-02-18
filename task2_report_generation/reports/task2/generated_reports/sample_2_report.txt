@@ -1,0 +1,25 @@
+Sample ID: 2
+True Label: Pneumonia
+Model: google/medgemma-4b-it
+============================================================
+
+Prompt: BASIC
+----------------------------------------
+Error generating report: Prompt contained 0 image tokens but received 1 images.
+
+Prompt: STRUCTURED
+----------------------------------------
+Error generating report: Prompt contained 0 image tokens but received 1 images.
+
+Prompt: CLINICAL
+----------------------------------------
+Error generating report: Prompt contained 0 image tokens but received 1 images.
+
+Prompt: PNEUMONIA_FOCUSED
+----------------------------------------
+Error generating report: Prompt contained 0 image tokens but received 1 images.
+
+Prompt: CONCISE
+----------------------------------------
+Error generating report: Prompt contained 0 image tokens but received 1 images.
+

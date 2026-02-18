@@ -1,0 +1,156 @@
+{
+  "config": {
+    "model_name": "google/medgemma-4b-it",
+    "hf_token": "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",
+    "quantize": true,
+    "load_in_4bit": true,
+    "bnb_4bit_compute_dtype": "bfloat16",
+    "bnb_4bit_use_double_quant": true,
+    "max_new_tokens": 500,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "num_beams": 3,
+    "do_sample": true,
+    "device": "cpu",
+    "num_samples": 5,
+    "output_dir": "reports/task2",
+    "figures_dir": "reports/task2/figures",
+    "reports_dir": "reports/task2/generated_reports"
+  },
+  "timestamp": "2026-02-17T14:28:46.058851",
+  "num_samples": 4,
+  "reports": [
+    {
+      "sample_id": 0,
+      "true_label": "Pneumonia",
+      "true_label_id": 1,
+      "prompt_comparison": {
+        "basic": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "basic",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "structured": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "structured",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "clinical": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "clinical",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "pneumonia_focused": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "pneumonia_focused",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "concise": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "concise",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        }
+      },
+      "timestamp": "2026-02-17T14:28:34.492308"
+    },
+    {
+      "sample_id": 1,
+      "true_label": "Normal",
+      "true_label_id": 0,
+      "prompt_comparison": {
+        "basic": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "basic",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "structured": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "structured",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "clinical": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "clinical",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "pneumonia_focused": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "pneumonia_focused",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "concise": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "concise",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        }
+      },
+      "timestamp": "2026-02-17T14:28:40.286718"
+    },
+    {
+      "sample_id": 2,
+      "true_label": "Pneumonia",
+      "true_label_id": 1,
+      "prompt_comparison": {
+        "basic": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "basic",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "structured": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "structured",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "clinical": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "clinical",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "pneumonia_focused": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "pneumonia_focused",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "concise": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "concise",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        }
+      },
+      "timestamp": "2026-02-17T14:28:43.085179"
+    },
+    {
+      "sample_id": 3,
+      "true_label": "Normal",
+      "true_label_id": 0,
+      "prompt_comparison": {
+        "basic": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "basic",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "structured": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "structured",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "clinical": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "clinical",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "pneumonia_focused": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "pneumonia_focused",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        },
+        "concise": {
+          "report": "Error generating report: Prompt contained 0 image tokens but received 1 images.",
+          "prompt_key": "concise",
+          "error": "Prompt contained 0 image tokens but received 1 images."
+        }
+      },
+      "timestamp": "2026-02-17T14:28:45.898353"
+    }
+  ]
+}

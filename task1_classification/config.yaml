@@ -1,0 +1,27 @@
+# Configuration file for pneumonia classification training
+# Optimized for CPU execution
+
+# Model configuration
+model_name: custom  # Options: custom, resnet18, efficientnet-b0, vit-tiny
+num_classes: 2
+
+# Training parameters
+batch_size: 32  # Reduce to 16 or 8 if memory issues
+learning_rate: 0.001
+num_epochs: 50
+patience: 10  # Early stopping patience
+weight_decay: 0.0001
+
+# Data parameters
+augment: true  # Enable data augmentation
+random_seed: 42
+
+# System parameters (CPU-optimized)
+device: cpu
+num_workers: 0  # Set to 0 for CPU to avoid multiprocessing issues
+pin_memory: false  # Disable pin_memory for CPU
+verbose: true
+
+# Paths
+output_dir: reports/task1
+models_dir: models/saved
