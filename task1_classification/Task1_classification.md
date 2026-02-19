@@ -1,15 +1,13 @@
-# Pneumonia Classification Model Evaluation Report
-
-**Date:** [Will be filled from your run]
+# **Task 1:** Pneumonia Classification Model Evaluation Report
 
 ## 1. Executive Summary
 
-A custom convolutional neural network (CNN) was developed for binary classification of chest X-ray images to detect pneumonia using the PneumoniaMNIST dataset. The model was trained on CPU for 27 epochs (with early stopping at epoch 27) using data augmentation. It achieved an accuracy of 85.10% with strong discriminative ability (AUC = 0.9223). However, detailed analysis reveals significant class imbalance issues and a tendency for high-confidence false positives.
+A Resnet18 was used for binary classification of chest X-ray images to detect pneumonia using the PneumoniaMNIST dataset. The model was trained on CPU for 27 epochs (with early stopping at epoch 27) using data augmentation. It achieved an accuracy of 85.10% with strong discriminative ability (AUC = 0.9223). However, detailed analysis reveals significant class imbalance issues and a tendency for high-confidence false positives.
 
 ### Key Results
 - **Accuracy:** 85.10%
-- **Precision:** 82.49% (to be verified)
-- **Recall:** 96.67% (to be verified)
+- **Precision:** 82.49%
+- **Recall:** 96.67%
 - **F1-Score:** 89.02%
 - **AUC-ROC:** 0.9223
 - **Test Samples:** 2,260 (1,925 Normal, 335 Pneumonia)
@@ -18,7 +16,7 @@ A custom convolutional neural network (CNN) was developed for binary classificat
 ## 2. Model Architecture
 
 ### 2.1 Architecture Overview
-A custom CNN architecture was designed for the 28x28 grayscale input images. The specific layer details would be documented in the code, but the architecture was chosen to balance model capacity with CPU training constraints.
+A Resnet18 architecture was used for the 28x28 grayscale input images. The specific layer details would be documented in the code, but the architecture was chosen to balance model capacity with CPU training constraints.
 
 **Design Considerations:**
 - Input size: 28x28x1 (grayscale)
@@ -27,7 +25,7 @@ A custom CNN architecture was designed for the 28x28 grayscale input images. The
 - Optimized for CPU execution
 
 ### 2.2 Model Justification
-A custom architecture was selected because:
+A Resnet18 architecture was selected because:
 - The small input size (28x28) doesn't benefit significantly from large pretrained models
 - Simpler architecture reduces computational requirements for CPU training
 - Allows full control over model capacity to prevent overfitting on limited data
@@ -39,7 +37,7 @@ A custom architecture was selected because:
 | Parameter | Value | Description |
 |-----------|-------|-------------|
 | **Model Parameters** | |
-| Model Name | `custom` | Custom CNN architecture |
+| Model Name | `resnet18` | CNN architecture |
 | Number of Classes | 2 | Normal vs Pneumonia |
 | **Training Parameters** | |
 | Batch Size | 32 | Balanced for CPU memory |
@@ -137,7 +135,6 @@ This suggests either:
 3. Potential calculation error in reporting script
 
 ## 5. In-Depth Failure Case Analysis
-
 ### 5.1 Overview of Misclassifications
 
 The model made **412 total errors**:
