@@ -211,3 +211,63 @@ The presence of normal images classified as pneumonia with near-certainty reveal
    # Apply temperature scaling
    from torch.nn.functional import softmax
    scaled_probs = softmax(logits / temperature, dim=1)
+   ```
+   - Calibrate on validation set
+   - Reduce overconfidence in predictions
+ 3. **Address Metric Discrepancy:**
+   - Investigate why reported precision (82.49%) differs from CM calculation (44.3%)
+   - Verify if metrics are from validation vs test set
+   - Check if different threshold was used for reporting
+### 7.2 Model Improvements
+ 4. **Weighted Loss Function:**
+    ```python
+    # Address class imbalance
+    class_weights = torch.tensor([1.0, 5.0])  # Higher weight for pneumonia
+    criterion = nn.CrossEntropyLoss(weight=class_weights) 
+    ```
+ 5. **Focal Loss:**
+    - Focus training on hard examples
+    - Particularly effective for imbalanced datasets
+    - Can reduce overconfidence
+ 6. **Ensemble Methods**
+    - Combine multiple models
+    - Use uncertainty estimation
+    - Reduce individual model overconfidence
+### 7.3 Training Improvements
+ 7. **Learning Rate Schedule:**
+    - Consider OneCycleLR for faster convergence
+    - Experiment with different optimizers (SGD with momentum)
+ 8. **Data Augmentation:**
+    - Add more aggressive augmentations
+    - Simulate real-world X-ray variations
+    - Use CutMix or MixUp for better generalization
+ 9. **Cross-Validation:**
+    - Implement k-fold cross-validation
+    - Better estimate of real-world performance
+ ### 7.4 Data Improvements
+ 10. **Higher Resolution:**
+    - Consider using original resolution images
+    - Critical details may be lost at 28x28
+ 12. **Hard Negative Mining:**
+    - Add high confidence false positives to training
+    - Focus on confusing normal cases
+## 8. Visualizations
+The following visualizations are available in the `figures/` directory:
+
+   - **confusion_matrix.png** — Confusion matrix with counts and percentages  
+   - **roc_curve.png** — ROC curve with AUC = 0.9223  
+   - **failure_cases.png** — Failure case examples (including two 0.993 confidence FPs)  
+   - **confidence_distribution.png** — Shows overconfidence in errors  
+   - **training_curves.png** — Training loss/accuracy over 27 epochs  
+   - **per_class_performance.png** — Per-class precision/recall/F1
+## 9. Training Efficiency Analysis
+The training process was highly efficient:
+| Metric         | Value | Benefit |
+|----------------|:-----:|---------|
+| Maximum Epochs | 50    | Upper bound set |
+| Actual Epochs  | 27    | 46% reduction via early stopping |
+| Epochs Saved   | 23    | Computational savings |
+| Best Epoch     | ~17   | Optimal model found early |
+| CPU Training   | Yes   | Accessible, no GPU required |
+## 10. Conclusion
+This implementation demonstrates a complete CNN pipeline for pneumonia detection, successfully training on CPU with comprehensive monitoring and evaluation. The model achieved its best performance at approximately epoch 17 and was stopped early at epoch 27, demonstrating efficient use of the early stopping mechanism.
