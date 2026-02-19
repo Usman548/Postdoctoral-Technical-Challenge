@@ -2,6 +2,15 @@
 """
 Training script for pneumonia classification from chest X-ray images.
 Optimized for CPU execution with comprehensive monitoring and error handling.
+
+SOLID alignment:
+- S (SRP): TrainingConfig = data + validation; CheckpointSaver = checkpoint I/O;
+  CPUTrainer = orchestration (still does dirs/data/model/optim/loop/viz/history).
+- O (OCP): New datasets can be used via DatasetProvider without changing trainer.
+- L (LSP): N/A (no inheritance hierarchy).
+- I (ISP): DatasetProvider is a narrow protocol; clients pass only what they need.
+- D (DIP): Trainer depends on DatasetProvider protocol and CheckpointSaver abstraction,
+  not concrete PneumoniaMNISTDataset or torch.save directly for checkpoint format.
 """
 
 import torch
@@ -31,6 +40,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 # Local imports
+from core.protocols import DatasetProvider
 from data.data_loader import PneumoniaMNISTDataset
 from models.cnn_model import create_model
 from utils.logger import setup_logger
@@ -39,6 +49,10 @@ from utils.visualization import plot_training_history
 # Configure logging
 logger = setup_logger(__name__)
 
+
+# ---------------------------------------------------------------------------
+# SOLID: Single Responsibility — config holds only data and validation
+# ---------------------------------------------------------------------------
 
 @dataclass
 class TrainingConfig:
@@ -93,6 +107,106 @@ class TrainingConfig:
         with open(path, 'r') as f:
             config_dict = yaml.safe_load(f)
         return cls(**config_dict)
+
+
+# ---------------------------------------------------------------------------
+# SOLID: Single Responsibility — checkpoint persistence is separate from training
+# ---------------------------------------------------------------------------
+
+class CheckpointSaver:
+    """Handles saving/loading checkpoints. Trainer delegates to this instead of doing I/O."""
+
+    def __init__(
+        self,
+        models_dir: Path,
+        model_name: str,
+        device: torch.device,
+    ):
+        self.models_dir = Path(models_dir)
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        self.model_name = model_name
+        self.device = device
+
+    def save(
+        self,
+        model: nn.Module,
+        optimizer: optim.Optimizer,
+        scheduler: Any,
+        config: TrainingConfig,
+        history: Dict[str, List[float]],
+        epoch: int,
+        is_best: bool,
+    ) -> Path:
+        checkpoint = {
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "scheduler_state_dict": scheduler.state_dict(),
+            "val_acc": history["val_acc"][-1] if history["val_acc"] else 0,
+            "val_loss": history["val_loss"][-1] if history["val_loss"] else float("inf"),
+            "config": config.to_dict(),
+            "history": history,
+        }
+        if is_best:
+            path = self.models_dir / f"best_model_{self.model_name}.pth"
+        else:
+            path = self.models_dir / f"checkpoint_epoch_{epoch + 1}_{self.model_name}.pth"
+        torch.save(checkpoint, path)
+        return path
+
+    def load(
+        self,
+        path: Union[str, Path],
+        model: nn.Module,
+        optimizer: optim.Optimizer,
+        scheduler: Any,
+    ) -> Dict[str, Any]:
+        path = Path(path)
+        checkpoint = torch.load(path, map_location=self.device)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        return checkpoint
+
+
+# ---------------------------------------------------------------------------
+# SOLID: Single Responsibility — training artifacts (viz + history) written by one class
+# ---------------------------------------------------------------------------
+
+class TrainingArtifactWriter:
+    """Writes training visualizations and history JSON. Trainer delegates to this (SRP)."""
+
+    def __init__(self, output_dir: Path, figures_dir: Path):
+        self.output_dir = Path(output_dir)
+        self.figures_dir = Path(figures_dir)
+
+    def write_visualizations(self, history: Dict[str, List[float]]) -> None:
+        """Generate and save training curves and epoch-times plot. Same behavior as before."""
+        logger.info("Generating training visualizations...")
+        try:
+            fig = plot_training_history(history)
+            fig.savefig(self.figures_dir / "training_curves.png", dpi=150, bbox_inches="tight")
+            plt.close(fig)
+            if history.get("epoch_times"):
+                plt.figure(figsize=(10, 4))
+                plt.plot(history["epoch_times"])
+                plt.xlabel("Epoch")
+                plt.ylabel("Time (seconds)")
+                plt.title("Training Time per Epoch")
+                plt.grid(True)
+                plt.savefig(self.figures_dir / "epoch_times.png", dpi=150, bbox_inches="tight")
+                plt.close()
+            logger.info(f"Visualizations saved to {self.figures_dir}")
+        except Exception as e:
+            logger.error(f"Failed to generate visualizations: {str(e)}")
+
+    def write_history(self, history: Dict[str, List[float]]) -> None:
+        """Save training history to JSON. Same behavior as before."""
+        path = self.output_dir / "training_history.json"
+        serializable = {k: [float(v) for v in vals] for k, vals in history.items()}
+        with open(path, "w") as f:
+            json.dump(serializable, f, indent=2)
+        logger.info(f"Training history saved to {path}")
 
 
 class CPUTrainer:
@@ -150,7 +264,13 @@ class CPUTrainer:
         self.best_val_loss = float('inf')
         self.patience_counter = 0
         self.current_epoch = 0
-        
+
+        # SOLID: Delegate checkpoint I/O and artifact writing to dedicated classes
+        self._checkpoint_saver = CheckpointSaver(
+            self.models_dir, self.config.model_name, self.device
+        )
+        self._artifact_writer = TrainingArtifactWriter(self.output_dir, self.figures_dir)
+
         logger.info("Trainer initialization complete")
     
     def _setup_directories(self) -> None:
@@ -163,22 +283,24 @@ class CPUTrainer:
             directory.mkdir(parents=True, exist_ok=True)
             logger.debug(f"Created directory: {directory}")
     
-    def _setup_data(self) -> None:
-        """Load and prepare dataset with CPU-optimized settings."""
+    def _setup_data(self, dataset: Optional[DatasetProvider] = None) -> None:
+        """Load and prepare dataset. Accepts any DatasetProvider (DIP)."""
         logger.info("Loading PneumoniaMNIST dataset...")
         
         try:
-            self.dataset = PneumoniaMNISTDataset(
-                batch_size=self.config.batch_size,
-                augment=self.config.augment,
-                random_seed=self.config.random_seed,
-                num_workers=self.config.num_workers,
-                pin_memory=self.config.pin_memory
-            )
+            if dataset is None:
+                dataset = PneumoniaMNISTDataset(
+                    batch_size=self.config.batch_size,
+                    augment=self.config.augment,
+                    random_seed=self.config.random_seed,
+                    num_workers=self.config.num_workers,
+                    pin_memory=self.config.pin_memory
+                )
+            self.dataset: DatasetProvider = dataset
             
             self.train_loader, self.val_loader, self.test_loader = self.dataset.get_dataloaders()
             self.class_names = self.dataset.get_class_names()
-            self.class_weights = self.dataset.class_weights
+            self.class_weights = list(self.dataset.class_weights)
             
             logger.info(f"Dataset loaded successfully:")
             logger.info(f"  - Training samples: {len(self.train_loader.dataset)}")
@@ -438,101 +560,36 @@ class CPUTrainer:
         logger.info(f"Best validation accuracy: {self.best_val_acc:.2f}%")
         logger.info("=" * 60)
         
-        # Generate and save visualizations
-        self._generate_visualizations()
-        
-        # Save training history
-        self._save_history()
-        
+        # Delegate to artifact writer (SRP)
+        self._artifact_writer.write_visualizations(self.history)
+        self._artifact_writer.write_history(self.history)
+
         return self.history
     
     def _save_checkpoint(self, epoch: int, is_best: bool = False) -> None:
-        """
-        Save model checkpoint.
-        
-        Args:
-            epoch: Current epoch number
-            is_best: Whether this is the best model so far
-        """
-        checkpoint = {
-            'epoch': epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'scheduler_state_dict': self.scheduler.state_dict(),
-            'val_acc': self.history['val_acc'][-1] if self.history['val_acc'] else 0,
-            'val_loss': self.history['val_loss'][-1] if self.history['val_loss'] else float('inf'),
-            'config': self.config.to_dict(),
-            'history': self.history
-        }
-        
-        if is_best:
-            checkpoint_path = self.models_dir / f'best_model_{self.config.model_name}.pth'
-        else:
-            checkpoint_path = self.models_dir / f'checkpoint_epoch_{epoch + 1}_{self.config.model_name}.pth'
-        
-        torch.save(checkpoint, checkpoint_path)
-        logger.debug(f"Checkpoint saved: {checkpoint_path}")
-    
-    def _generate_visualizations(self) -> None:
-        """Generate and save training visualizations."""
-        logger.info("Generating training visualizations...")
-        
-        try:
-            # Plot training curves
-            fig = plot_training_history(self.history)
-            fig.savefig(self.figures_dir / 'training_curves.png', 
-                       dpi=150, bbox_inches='tight')
-            plt.close(fig)
-            
-            # Plot additional metrics if available
-            if len(self.history['epoch_times']) > 0:
-                plt.figure(figsize=(10, 4))
-                plt.plot(self.history['epoch_times'])
-                plt.xlabel('Epoch')
-                plt.ylabel('Time (seconds)')
-                plt.title('Training Time per Epoch')
-                plt.grid(True)
-                plt.savefig(self.figures_dir / 'epoch_times.png', 
-                           dpi=150, bbox_inches='tight')
-                plt.close()
-            
-            logger.info(f"Visualizations saved to {self.figures_dir}")
-            
-        except Exception as e:
-            logger.error(f"Failed to generate visualizations: {str(e)}")
-    
-    def _save_history(self) -> None:
-        """Save training history to JSON file."""
-        history_path = self.output_dir / 'training_history.json'
-        
-        # Convert numpy values to Python types for JSON serialization
-        serializable_history = {}
-        for key, values in self.history.items():
-            serializable_history[key] = [float(v) for v in values]
-        
-        with open(history_path, 'w') as f:
-            json.dump(serializable_history, f, indent=2)
-        
-        logger.info(f"Training history saved to {history_path}")
+        """Delegate to CheckpointSaver (SRP)."""
+        path = self._checkpoint_saver.save(
+            self.model,
+            self.optimizer,
+            self.scheduler,
+            self.config,
+            self.history,
+            epoch,
+            is_best,
+        )
+        logger.debug(f"Checkpoint saved: {path}")
     
     def load_checkpoint(self, checkpoint_path: Union[str, Path]) -> None:
-        """
-        Load model from checkpoint.
-        
-        Args:
-            checkpoint_path: Path to checkpoint file
-        """
+        """Delegate to CheckpointSaver (SRP)."""
         checkpoint_path = Path(checkpoint_path)
         logger.info(f"Loading checkpoint from {checkpoint_path}")
-        
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
-        
-        self.model.load_state_dict(checkpoint['model_state_dict'])
-        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-        
-        logger.info(f"Checkpoint loaded (epoch {checkpoint['epoch'] + 1}, "
-                   f"val_acc={checkpoint['val_acc']:.2f}%)")
+        checkpoint = self._checkpoint_saver.load(
+            checkpoint_path, self.model, self.optimizer, self.scheduler
+        )
+        logger.info(
+            f"Checkpoint loaded (epoch {checkpoint['epoch'] + 1}, "
+            f"val_acc={checkpoint['val_acc']:.2f}%)"
+        )
 
 
 def main():

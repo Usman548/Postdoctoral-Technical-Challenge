@@ -32,12 +32,197 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 # Local imports
+from core.protocols import DatasetProvider
 from data.data_loader import PneumoniaMNISTDataset
 from models.cnn_model import create_model
 from utils.logger import setup_logger
 
 # Configure logging
 logger = setup_logger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# SOLID SRP: Metrics computation and visualization are separate responsibilities
+# ---------------------------------------------------------------------------
+
+class EvaluationMetricsCalculator:
+    """Computes evaluation metrics from predictions. Single responsibility."""
+
+    @staticmethod
+    def compute(
+        all_labels: np.ndarray,
+        all_predictions: np.ndarray,
+        all_probabilities: np.ndarray,
+        all_confidence_scores: np.ndarray,
+        class_names: List[str],
+    ) -> Dict[str, Any]:
+        """Return same metric dict as before (no behavior change)."""
+        metrics = {}
+        metrics["accuracy"] = float(accuracy_score(all_labels, all_predictions))
+        metrics["balanced_accuracy"] = float(balanced_accuracy_score(all_labels, all_predictions))
+        metrics["cohen_kappa"] = float(cohen_kappa_score(all_labels, all_predictions))
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            all_labels, all_predictions, average="binary", zero_division=0
+        )
+        metrics["precision"] = float(precision)
+        metrics["recall"] = float(recall)
+        metrics["f1_score"] = float(f1)
+        class_report = classification_report(
+            all_labels, all_predictions,
+            target_names=class_names, output_dict=True, zero_division=0
+        )
+        metrics["classification_report"] = class_report
+        fpr, tpr, _ = roc_curve(all_labels, all_probabilities[:, 1], pos_label=1)
+        metrics["auc"] = float(auc(fpr, tpr))
+        metrics["roc_curve"] = {"fpr": fpr.tolist(), "tpr": tpr.tolist()}
+        cm = confusion_matrix(all_labels, all_predictions)
+        metrics["confusion_matrix"] = cm.tolist()
+        metrics["confusion_matrix_percent"] = (cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]).tolist()
+        metrics["true_positives"] = int(cm[1, 1])
+        metrics["true_negatives"] = int(cm[0, 0])
+        metrics["false_positives"] = int(cm[0, 1])
+        metrics["false_negatives"] = int(cm[1, 0])
+        tp, tn, fp, fn = metrics["true_positives"], metrics["true_negatives"], metrics["false_positives"], metrics["false_negatives"]
+        metrics["tpr"] = float(tp / (tp + fn)) if (tp + fn) > 0 else 0
+        metrics["tnr"] = float(tn / (tn + fp)) if (tn + fp) > 0 else 0
+        metrics["fpr"] = float(fp / (fp + tn)) if (fp + tn) > 0 else 0
+        metrics["fnr"] = float(fn / (fn + tp)) if (fn + tp) > 0 else 0
+        metrics["false_positive_rate"] = metrics["fpr"]
+        metrics["false_negative_rate"] = metrics["fnr"]
+        metrics["sensitivity"] = metrics["tpr"]
+        metrics["specificity"] = metrics["tnr"]
+        metrics["mean_confidence"] = float(np.mean(all_confidence_scores))
+        metrics["std_confidence"] = float(np.std(all_confidence_scores))
+        metrics["num_misclassified"] = int(np.sum(all_labels != all_predictions))
+        metrics["misclassification_rate"] = float(metrics["num_misclassified"] / len(all_labels))
+        return metrics
+
+
+class EvaluationFigureWriter:
+    """Writes evaluation figures. Single responsibility; same outputs as before."""
+
+    def __init__(self, figures_dir: Path):
+        self.figures_dir = Path(figures_dir)
+
+    def write_all(
+        self,
+        metrics: Dict[str, Any],
+        all_labels: np.ndarray,
+        all_predictions: np.ndarray,
+        all_probabilities: np.ndarray,
+        all_confidence_scores: np.ndarray,
+        class_names: List[str],
+    ) -> None:
+        self._write_confusion_matrix(all_labels, all_predictions, class_names)
+        self._write_roc_curve(all_labels, all_probabilities, metrics.get("auc"))
+        self._write_confidence_distribution(all_labels, all_predictions, all_confidence_scores)
+        self._write_per_class_performance(all_labels, all_predictions, class_names)
+
+    def _write_confusion_matrix(
+        self, all_labels: np.ndarray, all_predictions: np.ndarray, class_names: List[str]
+    ) -> None:
+        cm = confusion_matrix(all_labels, all_predictions)
+        cm_percent = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                    xticklabels=class_names, yticklabels=class_names, ax=axes[0])
+        axes[0].set_xlabel("Predicted")
+        axes[0].set_ylabel("Actual")
+        axes[0].set_title("Confusion Matrix (Counts)")
+        sns.heatmap(cm_percent, annot=True, fmt=".1%", cmap="Blues",
+                    xticklabels=class_names, yticklabels=class_names, ax=axes[1])
+        axes[1].set_xlabel("Predicted")
+        axes[1].set_ylabel("Actual")
+        axes[1].set_title("Confusion Matrix (Percentages)")
+        plt.tight_layout()
+        plt.savefig(self.figures_dir / "confusion_matrix.png", dpi=150, bbox_inches="tight")
+        plt.close()
+
+    def _write_roc_curve(
+        self, all_labels: np.ndarray, all_probabilities: np.ndarray, roc_auc: Optional[float] = None
+    ) -> None:
+        fpr, tpr, _ = roc_curve(all_labels, all_probabilities[:, 1], pos_label=1)
+        if roc_auc is None:
+            roc_auc = auc(fpr, tpr)
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr, tpr, "b-", linewidth=2, label=f"ROC curve (AUC = {roc_auc:.3f})")
+        plt.plot([0, 1], [0, 1], "r--", linewidth=1, label="Random classifier (AUC = 0.5)")
+        plt.fill_between(fpr, 0, tpr, alpha=0.1, color="blue")
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel("False Positive Rate", fontsize=12)
+        plt.ylabel("True Positive Rate", fontsize=12)
+        plt.title("Receiver Operating Characteristic (ROC) Curve", fontsize=14)
+        plt.legend(loc="lower right")
+        plt.grid(True, alpha=0.3)
+        props = dict(boxstyle="round", facecolor="wheat", alpha=0.8)
+        plt.text(0.05, 0.95, f"AUC = {roc_auc:.3f}", transform=plt.gca().transAxes,
+                 fontsize=12, verticalalignment="top", bbox=props)
+        plt.tight_layout()
+        plt.savefig(self.figures_dir / "roc_curve.png", dpi=150, bbox_inches="tight")
+        plt.close()
+
+    def _write_confidence_distribution(
+        self,
+        all_labels: np.ndarray,
+        all_predictions: np.ndarray,
+        all_confidence_scores: np.ndarray,
+    ) -> None:
+        correct_mask = all_labels == all_predictions
+        incorrect_mask = ~correct_mask
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        axes[0].hist(all_confidence_scores[correct_mask], bins=20, alpha=0.7, label="Correct", color="green", density=True)
+        axes[0].hist(all_confidence_scores[incorrect_mask], bins=20, alpha=0.7, label="Incorrect", color="red", density=True)
+        axes[0].set_xlabel("Confidence Score")
+        axes[0].set_ylabel("Density")
+        axes[0].set_title("Confidence Distribution")
+        axes[0].legend()
+        axes[0].grid(True, alpha=0.3)
+        data = [all_confidence_scores[correct_mask], all_confidence_scores[incorrect_mask]]
+        bp = axes[1].boxplot(data, tick_labels=["Correct", "Incorrect"], patch_artist=True)
+        bp["boxes"][0].set_facecolor("lightgreen")
+        bp["boxes"][1].set_facecolor("lightcoral")
+        axes[1].set_ylabel("Confidence Score")
+        axes[1].set_title("Confidence by Prediction Correctness")
+        axes[1].grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(self.figures_dir / "confidence_distribution.png", dpi=150, bbox_inches="tight")
+        plt.close()
+
+    def _write_per_class_performance(
+        self,
+        all_labels: np.ndarray,
+        all_predictions: np.ndarray,
+        class_names: List[str],
+    ) -> None:
+        report = classification_report(
+            all_labels, all_predictions, target_names=class_names, output_dict=True
+        )
+        classes = list(class_names)
+        precision = [report[cls]["precision"] for cls in classes]
+        recall = [report[cls]["recall"] for cls in classes]
+        f1 = [report[cls]["f1-score"] for cls in classes]
+        x = np.arange(len(classes))
+        width = 0.25
+        fig, ax = plt.subplots(figsize=(10, 6))
+        rects1 = ax.bar(x - width, precision, width, label="Precision", color="skyblue")
+        rects2 = ax.bar(x, recall, width, label="Recall", color="lightcoral")
+        rects3 = ax.bar(x + width, f1, width, label="F1-Score", color="lightgreen")
+        ax.set_xlabel("Class")
+        ax.set_ylabel("Score")
+        ax.set_title("Per-Class Performance Metrics")
+        ax.set_xticks(x)
+        ax.set_xticklabels(classes)
+        ax.legend()
+        ax.grid(True, alpha=0.3, axis="y")
+        for rects in [rects1, rects2, rects3]:
+            for rect in rects:
+                h = rect.get_height()
+                ax.annotate(f"{h:.2f}", xy=(rect.get_x() + rect.get_width() / 2, h),
+                            xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8)
+        plt.tight_layout()
+        plt.savefig(self.figures_dir / "per_class_performance.png", dpi=150, bbox_inches="tight")
+        plt.close()
 
 
 @dataclass
@@ -80,18 +265,24 @@ class EvaluationConfig:
 class Evaluator:
     """
     Comprehensive evaluator for pneumonia classification model.
+    Depends on DatasetProvider when dataset is injected (DIP); same API and behavior.
     """
-    
-    def __init__(self, config: Union[Dict[str, Any], EvaluationConfig, str]):
+
+    def __init__(
+        self,
+        config: Union[Dict[str, Any], EvaluationConfig, str],
+        dataset: Optional[DatasetProvider] = None,
+    ):
         """
         Initialize evaluator.
-        
+
         Args:
             config: Evaluation configuration (dict, EvaluationConfig, or path to JSON)
+            dataset: Optional DatasetProvider; if None, PneumoniaMNISTDataset is used (backward compatible).
         """
         # Load configuration
         if isinstance(config, str):
-            with open(config, 'r') as f:
+            with open(config, "r") as f:
                 config_dict = json.load(f)
             self.config = EvaluationConfig(**config_dict)
         elif isinstance(config, dict):
@@ -100,57 +291,51 @@ class Evaluator:
             self.config = config
         else:
             raise ValueError(f"Invalid config type: {type(config)}")
-        
-        # Ensure CPU usage
-        self.device = torch.device('cpu')
+
+        self.device = torch.device("cpu")
         logger.info(f"Using device: {self.device}")
-        
-        # Setup output directories
+
         self._setup_directories()
-        
-        # Load dataset
-        self._setup_data()
+        self._setup_data(dataset)
         
         # Load model
         self._setup_model()
         
         # Initialize storage for predictions
         self._initialize_storage()
-        
+        # SOLID SRP: delegate figure writing to dedicated class
+        self._figure_writer = EvaluationFigureWriter(self.figures_dir)
+
         logger.info("Evaluator initialization complete")
-    
+
     def _setup_directories(self) -> None:
         """Create output directories."""
         self.output_dir = Path(self.config.output_dir)
         self.figures_dir = Path(self.config.figures_dir)
-        
         for directory in [self.output_dir, self.figures_dir]:
             directory.mkdir(parents=True, exist_ok=True)
             logger.debug(f"Created directory: {directory}")
     
-    def _setup_data(self) -> None:
-        """Load and prepare test dataset."""
+    def _setup_data(self, dataset: Optional[DatasetProvider] = None) -> None:
+        """Load and prepare test dataset. Uses injected dataset if provided (DIP)."""
         logger.info("Loading test dataset...")
-        
         try:
-            self.dataset = PneumoniaMNISTDataset(
-                batch_size=self.config.batch_size,
-                augment=self.config.augment,
-                random_seed=self.config.random_seed,
-                num_workers=self.config.num_workers,
-                pin_memory=self.config.pin_memory
-            )
-            
-            # Get test loader only
+            if dataset is None:
+                dataset = PneumoniaMNISTDataset(
+                    batch_size=self.config.batch_size,
+                    augment=self.config.augment,
+                    random_seed=self.config.random_seed,
+                    num_workers=self.config.num_workers,
+                    pin_memory=self.config.pin_memory,
+                )
+            self.dataset = dataset
             _, _, self.test_loader = self.dataset.get_dataloaders()
             self.class_names = self.dataset.get_class_names()
             self.num_classes = len(self.class_names)
-            
-            logger.info(f"Test dataset loaded:")
+            logger.info("Test dataset loaded:")
             logger.info(f"  - Test samples: {len(self.test_loader.dataset)}")
             logger.info(f"  - Class names: {self.class_names}")
             logger.info(f"  - Batch size: {self.config.batch_size}")
-            
         except Exception as e:
             logger.error(f"Failed to load dataset: {str(e)}")
             raise
@@ -227,9 +412,9 @@ class Evaluator:
         
         # Calculate all metrics
         metrics = self._calculate_metrics()
-        
-        # Generate visualizations
-        self._generate_visualizations()
+
+        # Generate visualizations (SRP: delegated to EvaluationFigureWriter)
+        self._generate_visualizations(metrics)
         
         # Analyze failure cases
         failure_analysis = self._analyze_failure_cases()
@@ -290,246 +475,29 @@ class Evaluator:
         self.sample_indices = np.array(self.sample_indices)
     
     def _calculate_metrics(self) -> Dict[str, Any]:
-        """
-        Calculate comprehensive classification metrics.
-        
-        Returns:
-            Dictionary containing all metrics
-        """
+        """Delegate to EvaluationMetricsCalculator (SRP). Same return value as before."""
         logger.info("Calculating evaluation metrics...")
-        
-        metrics = {}
-        
-        # Basic metrics
-        metrics['accuracy'] = float(accuracy_score(self.all_labels, self.all_predictions))
-        metrics['balanced_accuracy'] = float(balanced_accuracy_score(self.all_labels, self.all_predictions))
-        metrics['cohen_kappa'] = float(cohen_kappa_score(self.all_labels, self.all_predictions))
-        
-        # Precision, recall, F1-score (binary)
-        precision, recall, f1, _ = precision_recall_fscore_support(
-            self.all_labels, 
-            self.all_predictions, 
-            average='binary',
-            zero_division=0
-        )
-        metrics['precision'] = float(precision)
-        metrics['recall'] = float(recall)
-        metrics['f1_score'] = float(f1)
-        
-        # Per-class metrics
-        class_report = classification_report(
+        return EvaluationMetricsCalculator.compute(
             self.all_labels,
             self.all_predictions,
-            target_names=self.class_names,
-            output_dict=True,
-            zero_division=0
+            self.all_probabilities,
+            self.all_confidence_scores,
+            self.class_names,
         )
-        metrics['classification_report'] = class_report
-        
-        # AUC-ROC
-        fpr, tpr, _ = roc_curve(
-            self.all_labels, 
-            self.all_probabilities[:, 1],
-            pos_label=1
-        )
-        metrics['auc'] = float(auc(fpr, tpr))
-        metrics['roc_curve'] = {
-            'fpr': fpr.tolist(),
-            'tpr': tpr.tolist()
-        }
-        
-        # Confusion matrix
-        cm = confusion_matrix(self.all_labels, self.all_predictions)
-        metrics['confusion_matrix'] = cm.tolist()
-        metrics['confusion_matrix_percent'] = (cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]).tolist()
-        
-        # Additional metrics
-        metrics['true_positives'] = int(cm[1, 1])
-        metrics['true_negatives'] = int(cm[0, 0])
-        metrics['false_positives'] = int(cm[0, 1])
-        metrics['false_negatives'] = int(cm[1, 0])
-        
-        # Calculate rates
-        metrics['tpr'] = float(metrics['true_positives'] / (metrics['true_positives'] + metrics['false_negatives'])) if (metrics['true_positives'] + metrics['false_negatives']) > 0 else 0
-        metrics['tnr'] = float(metrics['true_negatives'] / (metrics['true_negatives'] + metrics['false_positives'])) if (metrics['true_negatives'] + metrics['false_positives']) > 0 else 0
-        metrics['fpr'] = float(metrics['false_positives'] / (metrics['false_positives'] + metrics['true_negatives'])) if (metrics['false_positives'] + metrics['true_negatives']) > 0 else 0
-        metrics['fnr'] = float(metrics['false_negatives'] / (metrics['false_negatives'] + metrics['true_positives'])) if (metrics['false_negatives'] + metrics['true_positives']) > 0 else 0
-        
-        # Add aliases for compatibility
-        metrics['false_positive_rate'] = metrics['fpr']
-        metrics['false_negative_rate'] = metrics['fnr']
-        metrics['sensitivity'] = metrics['tpr']
-        metrics['specificity'] = metrics['tnr']
-        
-        # Confidence statistics
-        metrics['mean_confidence'] = float(np.mean(self.all_confidence_scores))
-        metrics['std_confidence'] = float(np.std(self.all_confidence_scores))
-        
-        # Error analysis
-        metrics['num_misclassified'] = int(np.sum(self.all_labels != self.all_predictions))
-        metrics['misclassification_rate'] = float(metrics['num_misclassified'] / len(self.all_labels))
-        
-        return metrics
     
-    def _generate_visualizations(self) -> None:
-        """Generate and save all evaluation visualizations."""
+    def _generate_visualizations(self, metrics: Dict[str, Any]) -> None:
+        """Delegate to EvaluationFigureWriter (SRP). Same figures as before."""
         logger.info("Generating visualizations...")
-        
-        # Plot confusion matrix
-        self._plot_confusion_matrix()
-        
-        # Plot ROC curve
-        self._plot_roc_curve()
-        
-        # Plot confidence distribution
-        self._plot_confidence_distribution()
-        
-        # Plot per-class performance
-        self._plot_per_class_performance()
-        
-        logger.info(f"Visualizations saved to {self.figures_dir}")
-    
-    def _plot_confusion_matrix(self) -> None:
-        """Plot and save confusion matrix with percentages."""
-        cm = confusion_matrix(self.all_labels, self.all_predictions)
-        cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-        
-        # Absolute counts
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                   xticklabels=self.class_names,
-                   yticklabels=self.class_names,
-                   ax=axes[0])
-        axes[0].set_xlabel('Predicted')
-        axes[0].set_ylabel('Actual')
-        axes[0].set_title('Confusion Matrix (Counts)')
-        
-        # Percentages
-        sns.heatmap(cm_percent, annot=True, fmt='.1%', cmap='Blues',
-                   xticklabels=self.class_names,
-                   yticklabels=self.class_names,
-                   ax=axes[1])
-        axes[1].set_xlabel('Predicted')
-        axes[1].set_ylabel('Actual')
-        axes[1].set_title('Confusion Matrix (Percentages)')
-        
-        plt.tight_layout()
-        plt.savefig(self.figures_dir / 'confusion_matrix.png', 
-                   dpi=150, bbox_inches='tight')
-        plt.close()
-    
-    def _plot_roc_curve(self) -> None:
-        """Plot and save ROC curve with confidence interval."""
-        fpr, tpr, _ = roc_curve(self.all_labels, self.all_probabilities[:, 1])
-        roc_auc = auc(fpr, tpr)
-        
-        plt.figure(figsize=(8, 6))
-        plt.plot(fpr, tpr, 'b-', linewidth=2, 
-                label=f'ROC curve (AUC = {roc_auc:.3f})')
-        plt.plot([0, 1], [0, 1], 'r--', linewidth=1, 
-                label='Random classifier (AUC = 0.5)')
-        
-        plt.fill_between(fpr, 0, tpr, alpha=0.1, color='blue')
-        
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate', fontsize=12)
-        plt.ylabel('True Positive Rate', fontsize=12)
-        plt.title('Receiver Operating Characteristic (ROC) Curve', fontsize=14)
-        plt.legend(loc='lower right')
-        plt.grid(True, alpha=0.3)
-        
-        textstr = f'AUC = {roc_auc:.3f}'
-        props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
-        plt.text(0.05, 0.95, textstr, transform=plt.gca().transAxes,
-                fontsize=12, verticalalignment='top', bbox=props)
-        
-        plt.tight_layout()
-        plt.savefig(self.figures_dir / 'roc_curve.png', 
-                   dpi=150, bbox_inches='tight')
-        plt.close()
-    
-    def _plot_confidence_distribution(self) -> None:
-        """Plot distribution of confidence scores for correct/incorrect predictions."""
-        correct_mask = self.all_labels == self.all_predictions
-        incorrect_mask = ~correct_mask
-        
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-        
-        # Confidence distribution
-        axes[0].hist(self.all_confidence_scores[correct_mask], 
-                    bins=20, alpha=0.7, label='Correct', color='green', density=True)
-        axes[0].hist(self.all_confidence_scores[incorrect_mask], 
-                    bins=20, alpha=0.7, label='Incorrect', color='red', density=True)
-        axes[0].set_xlabel('Confidence Score')
-        axes[0].set_ylabel('Density')
-        axes[0].set_title('Confidence Distribution')
-        axes[0].legend()
-        axes[0].grid(True, alpha=0.3)
-        
-        # Confidence vs correctness box plot
-        data = [self.all_confidence_scores[correct_mask],
-                self.all_confidence_scores[incorrect_mask]]
-        bp = axes[1].boxplot(data, labels=['Correct', 'Incorrect'], patch_artist=True)
-        bp['boxes'][0].set_facecolor('lightgreen')
-        bp['boxes'][1].set_facecolor('lightcoral')
-        axes[1].set_ylabel('Confidence Score')
-        axes[1].set_title('Confidence by Prediction Correctness')
-        axes[1].grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.savefig(self.figures_dir / 'confidence_distribution.png', 
-                   dpi=150, bbox_inches='tight')
-        plt.close()
-    
-    def _plot_per_class_performance(self) -> None:
-        """Plot per-class precision, recall, and F1-score."""
-        report = classification_report(
+        self._figure_writer.write_all(
+            metrics,
             self.all_labels,
             self.all_predictions,
-            target_names=self.class_names,
-            output_dict=True
+            self.all_probabilities,
+            self.all_confidence_scores,
+            self.class_names,
         )
-        
-        classes = list(self.class_names)
-        precision = [report[cls]['precision'] for cls in classes]
-        recall = [report[cls]['recall'] for cls in classes]
-        f1 = [report[cls]['f1-score'] for cls in classes]
-        
-        x = np.arange(len(classes))
-        width = 0.25
-        
-        fig, ax = plt.subplots(figsize=(10, 6))
-        rects1 = ax.bar(x - width, precision, width, label='Precision', color='skyblue')
-        rects2 = ax.bar(x, recall, width, label='Recall', color='lightcoral')
-        rects3 = ax.bar(x + width, f1, width, label='F1-Score', color='lightgreen')
-        
-        ax.set_xlabel('Class')
-        ax.set_ylabel('Score')
-        ax.set_title('Per-Class Performance Metrics')
-        ax.set_xticks(x)
-        ax.set_xticklabels(classes)
-        ax.legend()
-        ax.grid(True, alpha=0.3, axis='y')
-        
-        def autolabel(rects):
-            for rect in rects:
-                height = rect.get_height()
-                ax.annotate(f'{height:.2f}',
-                           xy=(rect.get_x() + rect.get_width()/2, height),
-                           xytext=(0, 3), textcoords="offset points",
-                           ha='center', va='bottom', fontsize=8)
-        
-        autolabel(rects1)
-        autolabel(rects2)
-        autolabel(rects3)
-        
-        plt.tight_layout()
-        plt.savefig(self.figures_dir / 'per_class_performance.png', 
-                   dpi=150, bbox_inches='tight')
-        plt.close()
-    
+        logger.info(f"Visualizations saved to {self.figures_dir}")
+
     def _analyze_failure_cases(self) -> Dict[str, Any]:
         """
         Analyze and visualize failure cases.

@@ -1,16 +1,20 @@
 """
 CNN architectures for pneumonia classification.
 Includes custom CNN, ResNet variants, and Vision Transformer.
+Uses registry pattern (OCP): new models register without modifying create_model().
 """
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models as models
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Callable
 import logging
 
 logger = logging.getLogger(__name__)
+
+# SOLID OCP: Model registry — add new architectures by registering, not editing create_model
+MODEL_REGISTRY: Dict[str, Callable[..., nn.Module]] = {}
 
 class CustomCNN(nn.Module):
     """
@@ -155,49 +159,46 @@ class TinyVisionTransformer(nn.Module):
         
         return x
 
-def create_model(model_name: str = 'custom', num_classes: int = 2, pretrained: bool = False, **kwargs):
+
+def _build_custom(num_classes: int = 2, pretrained: bool = False, **kwargs) -> nn.Module:
+    return CustomCNN(num_classes=num_classes, **kwargs)
+
+
+def _build_resnet18(num_classes: int = 2, pretrained: bool = False, **kwargs) -> nn.Module:
+    weights = 'IMAGENET1K_V1' if pretrained else None
+    model = models.resnet18(weights=weights)
+    model.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
+    model.maxpool = nn.Identity()
+    model.fc = nn.Linear(model.fc.in_features, num_classes)
+    return model
+
+
+def _build_vit_tiny(num_classes: int = 2, pretrained: bool = False, **kwargs) -> nn.Module:
+    return TinyVisionTransformer(num_classes=num_classes, **kwargs)
+
+
+def _build_efficientnet_b0(num_classes: int = 2, pretrained: bool = False, **kwargs) -> nn.Module:
+    weights = 'IMAGENET1K_V1' if pretrained else None
+    model = models.efficientnet_b0(weights=weights)
+    model.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1, bias=False)
+    model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
+    return model
+
+
+# Register built-in models (OCP: extend by registering, not by editing create_model)
+MODEL_REGISTRY["custom"] = _build_custom
+MODEL_REGISTRY["resnet18"] = _build_resnet18
+MODEL_REGISTRY["vit"] = _build_vit_tiny
+MODEL_REGISTRY["vit-tiny"] = _build_vit_tiny
+MODEL_REGISTRY["efficientnet"] = _build_efficientnet_b0
+MODEL_REGISTRY["efficientnet-b0"] = _build_efficientnet_b0
+
+
+def create_model(model_name: str = 'custom', num_classes: int = 2, pretrained: bool = False, **kwargs) -> nn.Module:
     """
-    Factory function to create models.
-    
-    Args:
-        model_name: Name of the model architecture
-        num_classes: Number of output classes
-        pretrained: Whether to use pretrained weights (for torchvision models)
-        **kwargs: Additional arguments for model creation
-    
-    Returns:
-        PyTorch model
+    Factory function to create models. Uses registry; same signature and behavior as before.
     """
-    model_name = model_name.lower()
-    
-    if model_name == 'custom':
-        # CustomCNN doesn't use pretrained
-        return CustomCNN(num_classes=num_classes, **kwargs)
-    
-    elif model_name == 'resnet18':
-        # Adapt ResNet18 for grayscale 28x28 images
-        weights = 'IMAGENET1K_V1' if pretrained else None
-        model = models.resnet18(weights=weights)
-        # Modify first layer for grayscale
-        model.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False)
-        model.maxpool = nn.Identity()  # Remove maxpool to preserve spatial dimensions
-        # Modify last layer for binary classification
-        model.fc = nn.Linear(model.fc.in_features, num_classes)
-        return model
-    
-    elif model_name == 'vit' or model_name == 'vit-tiny':
-        # ViT doesn't use pretrained in this implementation
-        return TinyVisionTransformer(num_classes=num_classes, **kwargs)
-    
-    elif model_name == 'efficientnet' or model_name == 'efficientnet-b0':
-        # Adapt EfficientNet-B0
-        weights = 'IMAGENET1K_V1' if pretrained else None
-        model = models.efficientnet_b0(weights=weights)
-        # Modify first layer for grayscale
-        model.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1, bias=False)
-        # Modify last layer for binary classification
-        model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_classes)
-        return model
-    
-    else:
-        raise ValueError(f"Unknown model name: {model_name}")
+    key = model_name.lower()
+    if key not in MODEL_REGISTRY:
+        raise ValueError(f"Unknown model name: {model_name}. Registered: {list(MODEL_REGISTRY.keys())}")
+    return MODEL_REGISTRY[key](num_classes=num_classes, pretrained=pretrained, **kwargs)

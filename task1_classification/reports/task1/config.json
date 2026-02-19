@@ -1,9 +1,9 @@
 {
-  "model_name": "resnet18",
+  "model_name": "custom",
   "num_classes": 2,
-  "batch_size": 16,
+  "batch_size": 32,
   "learning_rate": 0.001,
-  "num_epochs": 3,
+  "num_epochs": 50,
   "patience": 10,
   "weight_decay": 0.0001,
   "augment": true,

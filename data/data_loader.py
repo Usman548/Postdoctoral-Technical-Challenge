@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 class PneumoniaMNISTDataset:
     """
     Wrapper class for PneumoniaMNIST dataset with preprocessing and augmentation.
+    Implements DatasetProvider protocol (get_dataloaders, get_class_names, class_weights)
+    for use with train/evaluate without coupling to this concrete class.
     """
     
     def __init__(self, 
