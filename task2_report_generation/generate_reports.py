@@ -31,7 +31,7 @@ class MedicalReportGenerator:
     
     def __init__(self, 
                  model_name: str = "google/medgemma-4b-it",
-                 hf_token: str = "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",
+                 hf_token: str = None,
                  quantize: bool = True,
                  device: str = "cuda"):
         """
@@ -52,7 +52,7 @@ class MedicalReportGenerator:
         logger.info(f"Using device: {self.device}")
         
         # Get token from environment if not provided
-        self.hf_token = hf_token or os.environ.get('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', None)
+        self.hf_token = hf_token or os.environ.get('HF_TOKEN', None)
         if self.hf_token is None:
             raise ValueError(
                 "HuggingFace token required for gated model. "
@@ -458,7 +458,7 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description='Generate medical reports with MedGemma-4b-it')
-    parser.add_argument('--token', type=str, default="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",
+    parser.add_argument('--token', type=str,
                         help='HuggingFace token (or set HF_TOKEN environment variable)')
     parser.add_argument('--samples', type=int, default=5,
                         help='Number of samples to process')
