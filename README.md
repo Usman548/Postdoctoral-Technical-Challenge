@@ -55,8 +55,7 @@ The dataset is automatically downloaded when you first run the code.
 
 ## 🎯 Running the Tasks
 ### Run Google Colab Notebook
-[Google Colab](https://colab.research.google.com/drive/1x1pnec2lnv6uZeYCI1h0h1437Kb3T81x#scrollTo=2pYb_KG2NwKR)
-This launches a complete Colab Notebook where you can:
+This launches a complete [Google Colab](https://colab.research.google.com/drive/1x1pnec2lnv6uZeYCI1h0h1437Kb3T81x#scrollTo=2pYb_KG2NwKR) where you can:
 - Select which task to run
 - Configure parameters interactively 
 - View results 
