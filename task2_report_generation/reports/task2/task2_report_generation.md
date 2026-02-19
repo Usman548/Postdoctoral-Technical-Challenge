@@ -1,164 +1,91 @@
-# Medical Report Generation with MedGemma-4b-it
+# Task 2: Medical Report Generation using Visual Language Model
 
-**Date:** 2026-02-17 14:28:46
+## 1. Executive Summary
 
-## Model Configuration
+This task aimed to implement a medical report generation system using Google's MedGemma-4b-it, a state-of-the-art visual language model designed for medical imaging. While the model was successfully loaded and configured, a critical technical issue was encountered: the prompts lacked the required image token placeholder that MedGemma expects for multimodal inputs. This resulted in the error: **"Prompt contained 0 image tokens but received 1 images."**
 
-- **Model:** google/medgemma-4b-it
-- **Quantization:** 4-bit
-- **Device:** cpu
-- **Samples Evaluated:** 4
+This report documents the implementation approach, the issue encountered, debugging efforts, and lessons learned for future work.
 
-## Prompting Strategies Tested
+## 2. Model Selection and Justification
 
-### 1. Basic Prompt
+### 2.1 Selected Model: Google MedGemma-4b-it
 
+MedGemma-4b-it was chosen for this task for several compelling reasons [citation:1][citation:2]:
+
+| Criteria | MedGemma-4b-it | Alternative Models |
+|----------|----------------|-------------------|
+| **Medical Specialization** | Pre-trained on medical imaging data | LLaVA-Med (good alternative) |
+| **Model Size** | 4B parameters (balanced) | BioViL-T (smaller, less capable) |
+| **Accessibility** | Open-source on Hugging Face | Some alternatives require commercial licenses |
+| **Documentation** | Well-documented with examples | PMC-CLIP (less documentation) |
+| **Multimodal** | Native image+text understanding | CLIP-based models (embedding only) |
+
+**Justification Points:**
+
+1. **Domain Specialization:** MedGemma is specifically designed for medical applications, unlike general-purpose VLMs [citation:3]
+
+2. **Report Generation Capability:** Unlike embedding-only models (BioViL, PMC-CLIP), MedGemma can generate free-text reports [citation:4]
+
+3. **Community Support:** Backed by Google and Hugging Face with active development
+
+4. **Resource Requirements:** 4B parameter model with quantization options makes it feasible for Colab's free tier
+
+### 2.2 Implementation Configuration
+
+The model was configured with the following optimizations for Colab's free tier:
+
+```python
+config = {
+    "model_name": "google/medgemma-4b-it",
+    "quantization": {
+        "load_in_4bit": True,
+        "bnb_4bit_compute_dtype": "bfloat16",
+        "bnb_4bit_use_double_quant": True
+    },
+    "generation": {
+        "max_new_tokens": 500,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_beams": 3,
+        "do_sample": True
+    },
+    "device": "cpu",  # CPU-only execution
+    "num_samples": 4
+}
 ```
-Describe this chest X-ray in detail.
+## 3. Implementation Approach
+### 3.1 Prompting Strategies Designed
+Five prompting strategies were developed to test different approaches to medical report generation:
+| Prompt Key         | Strategy                  | Expected Output Format |
+|-------------------|---------------------------|------------------------|
+| `basic`           | Simple instruction         | Free-form description |
+| `structured`      | Radiologist template       | FINDINGS/IMPRESSION/RECOMMENDATION sections |
+| `clinical`        | Clinical history context   | Full radiology report format |
+| `pneumonia_focused` | Targeted pneumonia analysis | Focused pneumonia assessment |
+
+### 3.2 Expected Prompt Format (Based on Documentation)
+According to MedGemma documentation, prompts should include an image token placeholder:
+```python
+# Correct format (should have been):
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {"type": "image"},  # <-- Missing image token!
+            {"type": "text", "text": "Describe this chest X-ray."}
+        ]
+    }
+]
 ```
+### 3.3 Pipeline Architecture
+The implemented pipeline included:
 
-### 2. Structured Prompt
+1. **Image Preprocessing:** Resize to 896×896 (MedGemma's expected input size)
 
-```
-You are an expert radiologist. Analyze this chest X-ray and provide a structured report:
+2. **Model Loading:** 4-bit quantization for memory efficiency
 
-FINDINGS:
-- Lung fields: [Describe lung parenchyma, presence of opacities, infiltrates, or consolidations]
-- C...
-```
+3. **Prompt Engineering:** Multiple strategies for comparison
 
-### 3. Clinical Prompt
+4. **Report Generation:** Temperature-based sampling for diversity
 
-```
-You are an expert radiologist specializing in chest imaging.
-
-CLINICAL HISTORY: Patient presents with cough and fever, suspected pneumonia.
-
-TECHNIQUE: Chest X-ray, frontal view
-
-FINDINGS:
-[Provide de...
-```
-
-### 4. Pneumonia_Focused Prompt
-
-```
-Focus on detecting signs of pneumonia in this chest X-ray:
-- Are there any airspace opacities or consolidations?
-- Is there lobar or multilobar involvement?
-- Are there associated findings (pleural ef...
-```
-
-### 5. Concise Prompt
-
-```
-Provide a brief radiology report for this chest X-ray in 2-3 sentences.
-Focus on the most clinically relevant findings.
-```
-
-## Prompt Performance Analysis
-
-| Prompt | Avg Words | Agreement with Truth |
-|--------|-----------|---------------------|
-| basic | 0 | 0.0% |
-| structured | 0 | 0.0% |
-| clinical | 0 | 0.0% |
-| pneumonia_focused | 0 | 0.0% |
-| concise | 0 | 0.0% |
-
-## Sample Generated Reports
-
-### Sample 0 (True: Pneumonia)
-
-**Basic Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
-**Structured Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
----
-
-### Sample 1 (True: Normal)
-
-**Basic Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
-**Structured Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
----
-
-### Sample 2 (True: Pneumonia)
-
-**Basic Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
-**Structured Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
----
-
-### Sample 3 (True: Normal)
-
-**Basic Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
-**Structured Prompt:**
-
-```
-Error generating report: Prompt contained 0 image tokens but received 1 images.
-```
-
----
-
-## Visualizations
-
-The following visualizations have been generated:
-
-- `figures/sample_*_report.png` - Sample images with generated reports
-- `generated_reports/all_reports.json` - All generated reports in JSON format
-- `generated_reports/quality_analysis.json` - Quality analysis results
-
-## Model Strengths and Limitations
-
-### Strengths
-- Generates clinically relevant descriptions
-- Follows radiology report structure with appropriate prompting
-- Handles both normal and abnormal cases
-- Multiple prompting strategies allow for different levels of detail
-
-### Limitations
-- May hallucinate findings not present in the image
-- Requires careful prompt engineering for optimal results
-- Computationally expensive (requires GPU)
-- 28x28 image resolution limits detail perception
-
-### Recommendations for Improvement
-- Best performing prompt: 'basic' with 0.0% agreement
-- Consider fine-tuning MedGemma on specific report structure
-- Add more clinical context in prompts for better accuracy
-- Evaluate on more diverse cases to test generalization
-
----
-*Report generated by MedGemma-4b-it medical VLM*
+5. **Evaluation:** Quality analysis and comparison with ground truth
