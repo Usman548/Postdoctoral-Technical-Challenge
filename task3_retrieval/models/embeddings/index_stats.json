@@ -8,6 +8,6 @@
     "pneumonia": 390
   },
   "normalized": true,
-  "build_time": "2026-02-17T14:57:34.397354",
+  "build_time": "2026-02-19T01:18:11.814817",
   "image_id_format": "test_{batch_idx:04d}_{sample_idx:03d}"
 }

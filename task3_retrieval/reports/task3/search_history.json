@@ -1,11 +1,702 @@
 [
   {
-    "type": "text",
-    "query": "normal chest",
-    "target_label": 0,
-    "k": 5,
-    "results_count": 5,
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.1751101016998291,
+    "timestamp": "2026-02-19T01:18:25.610132"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015214920043945312,
+    "timestamp": "2026-02-19T01:18:25.625346"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
     "time": 0.0,
-    "timestamp": "2026-02-17T15:00:22.615165"
+    "timestamp": "2026-02-19T01:18:25.625346"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015650510787963867,
+    "timestamp": "2026-02-19T01:18:25.640997"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.640997"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015644550323486328,
+    "timestamp": "2026-02-19T01:18:25.656642"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.657278"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.657278"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015055418014526367,
+    "timestamp": "2026-02-19T01:18:25.672334"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.672334"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.672334"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.672334"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01567363739013672,
+    "timestamp": "2026-02-19T01:18:25.688008"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.688008"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.688008"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0195920467376709,
+    "timestamp": "2026-02-19T01:18:25.707599"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0025115013122558594,
+    "timestamp": "2026-02-19T01:18:25.710111"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.710111"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.009391546249389648,
+    "timestamp": "2026-02-19T01:18:25.719502"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.719502"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.719502"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.016028165817260742,
+    "timestamp": "2026-02-19T01:18:25.735531"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.735531"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.735531"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0156857967376709,
+    "timestamp": "2026-02-19T01:18:25.751217"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.751217"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.751217"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01572251319885254,
+    "timestamp": "2026-02-19T01:18:25.766939"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.766939"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.766939"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.766939"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01566028594970703,
+    "timestamp": "2026-02-19T01:18:25.782599"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.782599"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.782599"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015728473663330078,
+    "timestamp": "2026-02-19T01:18:25.798328"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.798328"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.011850357055664062,
+    "timestamp": "2026-02-19T01:18:25.810178"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.003835916519165039,
+    "timestamp": "2026-02-19T01:18:25.814014"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.814014"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.814014"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015643835067749023,
+    "timestamp": "2026-02-19T01:18:25.829658"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.829658"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.829658"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.829658"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015691518783569336,
+    "timestamp": "2026-02-19T01:18:25.845349"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.845349"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.845349"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.017700672149658203,
+    "timestamp": "2026-02-19T01:18:25.863050"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.863050"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.013625621795654297,
+    "timestamp": "2026-02-19T01:18:25.876676"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.876676"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.876676"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01834416389465332,
+    "timestamp": "2026-02-19T01:18:25.895020"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.895020"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01297760009765625,
+    "timestamp": "2026-02-19T01:18:25.907997"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.002044677734375,
+    "timestamp": "2026-02-19T01:18:25.910042"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.910042"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.014191865921020508,
+    "timestamp": "2026-02-19T01:18:25.924234"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.924234"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.924234"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015082836151123047,
+    "timestamp": "2026-02-19T01:18:25.939317"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.939317"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.939317"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:25.939317"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.039408206939697266,
+    "timestamp": "2026-02-19T01:18:25.978725"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.025902509689331055,
+    "timestamp": "2026-02-19T01:18:26.004628"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.00548553466796875,
+    "timestamp": "2026-02-19T01:18:26.010113"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.007799625396728516,
+    "timestamp": "2026-02-19T01:18:26.017913"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.017913"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.017913"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015790462493896484,
+    "timestamp": "2026-02-19T01:18:26.033703"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.033703"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.033703"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015755414962768555,
+    "timestamp": "2026-02-19T01:18:26.049459"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.049459"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.049459"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.016031980514526367,
+    "timestamp": "2026-02-19T01:18:26.065491"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.065491"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.065491"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015927553176879883,
+    "timestamp": "2026-02-19T01:18:26.081418"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.081418"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.081418"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.018141508102416992,
+    "timestamp": "2026-02-19T01:18:26.099559"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0020601749420166016,
+    "timestamp": "2026-02-19T01:18:26.101620"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.101620"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.011122941970825195,
+    "timestamp": "2026-02-19T01:18:26.112743"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.112743"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.112743"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01610851287841797,
+    "timestamp": "2026-02-19T01:18:26.128851"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.128851"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.128851"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015675783157348633,
+    "timestamp": "2026-02-19T01:18:26.144527"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.144527"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.144527"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.015763282775878906,
+    "timestamp": "2026-02-19T01:18:26.160290"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.160290"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.160290"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.01591038703918457,
+    "timestamp": "2026-02-19T01:18:26.176201"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.176201"
+  },
+  {
+    "type": "image",
+    "k": 10,
+    "results_count": 10,
+    "time": 0.0,
+    "timestamp": "2026-02-19T01:18:26.176201"
   }
 ]
