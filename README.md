@@ -161,7 +161,7 @@ python task3_retrieval/search.py --mode demo           # Run demo
 ## Google Colab Notebooks
 
 - **Task 1 — Classification:** [Open in Colab](https://colab.research.google.com/drive/1ldCnh4fF1RB2j2XqmNCV1a2If0LQrvFN?usp=sharing)
-- **Task 2 — Report Generation:** [Open in Colab](PASTE_TASK2_COLAB_LINK_HERE)
+- **Task 2 — Report Generation:** [Open in Colab](https://colab.research.google.com/drive/1hPsHrhBfE5CeXfrD2F-H-FVLPNSPBL48?usp=sharing)
 - **Task 3 — Retrieval:** [Open in Colab](PASTE_TASK3_COLAB_LINK_HERE)
 
 ## 🛠️ Technologies Used
