@@ -460,7 +460,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate medical reports with MedGemma-4b-it')
     parser.add_argument('--token', type=str, default=None,
                         help='HuggingFace token (or set HF_TOKEN environment variable)')
-    parser.add_argument('--samples', type=int, default=5,
+    parser.add_argument('--samples', type=int, default=10,
                         help='Number of samples to process')
     parser.add_argument('--no-quantize', action='store_true',
                         help='Disable 4-bit quantization (uses more memory)')
