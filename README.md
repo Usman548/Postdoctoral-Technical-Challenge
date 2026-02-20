@@ -17,6 +17,13 @@ This project implements three interconnected tasks:
 | **Task 3** | Semantic Image Retrieval System | FAISS, ResNet embeddings, Vector Search |
 
 
+## Google Colab Notebooks
+
+- **Task 1 — Classification:** [Open in Colab](https://colab.research.google.com/drive/1ldCnh4fF1RB2j2XqmNCV1a2If0LQrvFN?usp=sharing)
+- **Task 2 — Report Generation:** [Open in Colab](https://colab.research.google.com/drive/1hPsHrhBfE5CeXfrD2F-H-FVLPNSPBL48?usp=sharing)
+- **Task 3 — Retrieval:** [Open in Colab](https://colab.research.google.com/drive/1gVTMycS8urS7QLobhk0S7tR4nuS7SgCe?usp=sharing)
+- **Complete Tasks Notebook:** [Open in Colab](https://colab.research.google.com/drive/1Zz9Zl3lE7YtZWdX4k1aEQO9fWu6f9tlM?usp=sharing) 
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -29,8 +36,8 @@ This project implements three interconnected tasks:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/pneumonia-multimodal-ai.git
-cd pneumonia-multimodal-ai
+git clone https://github.com/Usman548/Postdoctoral-Technical-Challenge.git
+cd Postdoctoral-Technical-Challenge
 
 # Create virtual environment
 python -m venv venv
@@ -55,7 +62,7 @@ The dataset is automatically downloaded when you first run the code.
 
 ## 🎯 Running the Tasks
 ### Run Google Colab Notebook
-This launches a complete [Google Colab](https://colab.research.google.com/drive/1x1pnec2lnv6uZeYCI1h0h1437Kb3T81x#scrollTo=2pYb_KG2NwKR) where you can:
+This launches a complete [Google Colab](https://colab.research.google.com/github/Usman548/Postdoctoral-Technical-Challenge/blob/main/Complete_Notebook.ipynb) where you can:
 - Select which task to run
 - Configure parameters interactively 
 - View results 
@@ -66,7 +73,7 @@ This launches a complete [Google Colab](https://colab.research.google.com/drive/
 python task1_classification/train.py
 
 # Train with custom parameters
-python task1_classification/train.py --model resnet18 --batch_size 32 --epochs 50
+python task1_classification/train.py --model resnet18 --batch_size 32 --epochs 50 # Can select multiple models such as custom, resnet18, efficientnet-b0, vit-tiny
 
 # Evaluate trained model
 python task1_classification/evaluate.py --model_path models/saved/best_model_resnet18.pth
@@ -158,11 +165,6 @@ python task3_retrieval/search.py --mode demo           # Run demo
 | P@10   | 0.791 |
 | mAP    | 0.826 |
 
-## Google Colab Notebooks
-
-- **Task 1 — Classification:** [Open in Colab](PASTE_TASK1_COLAB_LINK_HERE)
-- **Task 2 — Report Generation:** [Open in Colab](PASTE_TASK2_COLAB_LINK_HERE)
-- **Task 3 — Retrieval:** [Open in Colab](PASTE_TASK3_COLAB_LINK_HERE)
 
 ## 🛠️ Technologies Used
 
