@@ -464,7 +464,7 @@ if __name__ == '__main__':
                         help='Number of samples to process')
     parser.add_argument('--no-quantize', action='store_true',
                         help='Disable 4-bit quantization (uses more memory)')
-    parser.add_argument('--device', type=str, default= "cpu"
+    parser.add_argument('--device', type=str, default= "cpu",
                         help='Device to use (cuda, cpu)')
     
     args = parser.parse_args()
