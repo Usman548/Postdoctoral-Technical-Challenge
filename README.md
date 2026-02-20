@@ -17,6 +17,13 @@ This project implements three interconnected tasks:
 | **Task 3** | Semantic Image Retrieval System | FAISS, ResNet embeddings, Vector Search |
 
 
+## Google Colab Notebooks
+
+- **Task 1 — Classification:** [Open in Colab](https://colab.research.google.com/drive/1ldCnh4fF1RB2j2XqmNCV1a2If0LQrvFN?usp=sharing)
+- **Task 2 — Report Generation:** [Open in Colab](https://colab.research.google.com/drive/1hPsHrhBfE5CeXfrD2F-H-FVLPNSPBL48?usp=sharing)
+- **Task 3 — Retrieval:** [Open in Colab](https://colab.research.google.com/drive/1gVTMycS8urS7QLobhk0S7tR4nuS7SgCe?usp=sharing)
+- **Complete Tasks Notebook:** [Open in Colab](https://colab.research.google.com/drive/1Zz9Zl3lE7YtZWdX4k1aEQO9fWu6f9tlM?usp=sharing) 
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -158,11 +165,6 @@ python task3_retrieval/search.py --mode demo           # Run demo
 | P@10   | 0.791 |
 | mAP    | 0.826 |
 
-## Google Colab Notebooks
-
-- **Task 1 — Classification:** [Open in Colab](https://colab.research.google.com/drive/1ldCnh4fF1RB2j2XqmNCV1a2If0LQrvFN?usp=sharing)
-- **Task 2 — Report Generation:** [Open in Colab](https://colab.research.google.com/drive/1hPsHrhBfE5CeXfrD2F-H-FVLPNSPBL48?usp=sharing)
-- **Task 3 — Retrieval:** [Open in Colab](PASTE_TASK3_COLAB_LINK_HERE)
 
 ## 🛠️ Technologies Used
 
