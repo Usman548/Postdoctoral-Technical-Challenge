@@ -29,8 +29,8 @@ This project implements three interconnected tasks:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/pneumonia-multimodal-ai.git
-cd pneumonia-multimodal-ai
+git clone https://github.com/Usman548/Postdoctoral-Technical-Challenge.git
+cd Postdoctoral-Technical-Challenge
 
 # Create virtual environment
 python -m venv venv
