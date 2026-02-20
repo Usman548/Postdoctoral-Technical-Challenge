@@ -66,7 +66,7 @@ This launches a complete [Google Colab](https://colab.research.google.com/github
 python task1_classification/train.py
 
 # Train with custom parameters
-python task1_classification/train.py --model resnet18 --batch_size 32 --epochs 50
+python task1_classification/train.py --model resnet18 --batch_size 32 --epochs 50 # Can select multiple models such as custom, resnet18, efficientnet-b0, vit-tiny
 
 # Evaluate trained model
 python task1_classification/evaluate.py --model_path models/saved/best_model_resnet18.pth
