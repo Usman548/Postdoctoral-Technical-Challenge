@@ -33,7 +33,7 @@ class MedicalReportGenerator:
                  model_name: str = "google/medgemma-4b-it",
                  hf_token: str = None,
                  quantize: bool = True,
-                 device: str = "cuda"):
+                 device: str = "cpu"):
         """
         Initialize MedGemma-4b-it report generator.
         
